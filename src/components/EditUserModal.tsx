@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   TextInput,
   Group,
@@ -7,11 +7,8 @@ import {
   Text,
   LoadingOverlay,
   Modal,
+  NativeSelect
 } from '@mantine/core';
-import { IconAt } from '@tabler/icons';
-import { useMutation } from '@tanstack/react-query';
-import { customAxios } from '../api/axios';
-import { createUser } from '../api/apiFunctions';
 import useUserContext from '../hooks/useUserContext'
 
 type Props = {
@@ -19,40 +16,34 @@ type Props = {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export function AddUserModal({open,setOpen}: Props) {
+export function EditUserModal({formState,setEditFormState}) {
     
     const [data,setData] = useState({
-        id: (new Date().getTime()).toString(36),
-        firstName: '',
-        lastName: '',
-        email: '',
-        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr8oCjW7HY8kHSBPdUN_q4gt1bgn-1RdgAOA&usqp=CAU'
+      ...formState
     })
     const { dispatch } = useUserContext()
-  
-    const {mutate,isLoading} = useMutation(createUser)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setData(p => ({
         ...p,
         [e.target.name]: e.target.value
     }))
+    
+    useEffect(() => {
+      setData(formState)
+    },[formState])
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        mutate(data)
         dispatch({
-          type: 'ADD_USER',
+          type: 'EDIT_USER',
           payload: data
         })
-        setOpen(false)
+        setEditFormState({open: false})
     }
     
-
-
-
   return (
-    <Modal opened={open} centered onClose={() => setOpen(false)} withCloseButton={false}>
-      <Text size={'lg'} ta='center' fw={500}>ADD USER</Text>
+    <Modal opened={formState.open} centered onClose={() => setEditFormState({open: false})} withCloseButton={false}>
+      <Text size={'lg'} ta='center' fw={500}>EDIT USER</Text>
     <Paper
       p={'lg'}
       shadow={'sm'}
@@ -61,7 +52,7 @@ export function AddUserModal({open,setOpen}: Props) {
         }}
         >
       <form onSubmit={e => handleSubmit(e)}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={false} />
           <Group grow>
             <TextInput
               data-autofocus
@@ -83,16 +74,13 @@ export function AddUserModal({open,setOpen}: Props) {
               />
           </Group>
 
-        <TextInput
-          mt="md"
-          required
-          placeholder="Your email"
-          label="Email"
-          name='email'
-          value={data.email}
-          onChange={e => handleChange(e)}
-          icon={<IconAt size={16} stroke={1.5} />}
-          />
+        <NativeSelect
+        data={['Admin', 'Sales', 'Operations']}
+        label="User Role"
+        name='role'
+        onChange={e => handleChange(e)}
+        value={data.role}
+        />
         <Button mt="md" color="blue" type="submit" fullWidth>
             Submit
         </Button>
@@ -102,4 +90,4 @@ export function AddUserModal({open,setOpen}: Props) {
   );
 }
 
-export default AddUserModal
+export default EditUserModal

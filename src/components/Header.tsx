@@ -3,11 +3,7 @@ import { IconPlus } from '@tabler/icons'
 import React,{useState} from 'react'
 import { AddUserModal } from './AddUserModal'
 
-type Props = {
-  total: number | undefined
-}
-
-const Header = ({total}: Props) => {
+const Header = () => {
   const [open,setOpen] = useState(false)
   return (
     <>
@@ -15,7 +11,7 @@ const Header = ({total}: Props) => {
         <Stack spacing={0}>
             <Flex align={'center'} justify={'start'} gap={5}>
                 <Text  size={'md'} fw={500}>Users</Text>
-                <Badge color={'green'} variant={'light'}>{total} Users</Badge>
+                <Badge color={'green'} variant={'light'}>100 Users</Badge>
             </Flex>
             <Text size={'sm'} color='dimmed'>Manage your team members and their account permission</Text>
         </Stack>

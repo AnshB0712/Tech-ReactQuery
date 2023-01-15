@@ -1,6 +1,11 @@
-import { ActionIcon, Badge, Flex, Group, Image, Stack, Text } from '@mantine/core'
+import { ActionIcon, Badge, Flex, Group, Image, Stack, Text,Loader } from '@mantine/core'
 import { IconPencil, IconTrash } from '@tabler/icons'
 import React from 'react'
+import { useMutation } from '@tanstack/react-query'
+import useUserContext from '../hooks/useUserContext'
+import {customAxios} from '../api/axios'
+import {deleteUser} from '../api/apiFunctions'
+import {GRID_COLUMNS_DIVISION} from '../contants'
 
 type Props = {
   user:{
@@ -12,11 +17,71 @@ type Props = {
   }
 }
 
-const TableRow = ({ user }: Props) => {
+const DeleteActionIcon = ({ id }) => {
+  const {dispatch} = useUserContext()
+  const { mutateAsync,isLoading } = useMutation({
+    mutationFn: () => deleteUser(id),
+    onSuccess: () => {
+      dispatch({ 
+      type:'DELETE_USER',
+      payload:{ id } 
+    })
+    }
+  })
+  const handleClick = async () => {
+    // DUMMYJSON API WILL THROW ERROR FOR CUSTOM ID USER CREATED MANUALLY
+    if((String(id)).length <= 3)
+    await mutateAsync(id)
+    else 
+    dispatch({ 
+      type:'DELETE_USER',
+      payload:{ id } 
+    })
+  }
+  return (
+    <ActionIcon 
+    onClick={handleClick}
+    style={{justifySelf:'center'}}
+    >
+    { !isLoading ? <IconTrash size={18}/>:<Loader size={'xs'}/>}
+    </ActionIcon>
+  )
+}
+
+const EditActionIcon = ({setEditFormState,user}) => {
+  return (
+      <ActionIcon 
+      onClick={() => setEditFormState({open: true,...user})} 
+      style={{justifySelf:'center'}}>
+      <IconPencil size={18}/>
+      </ActionIcon>
+      )
+}
+
+const LastLoginDate = () => {
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  }
+  const [date,year,time] = (new Intl.DateTimeFormat(undefined, {...options}).format(new Date())).split(',')
+  
+  return (
+    <>
+    <Text fw={500} color='dimmed' size={'sm'}>{date},{year}</Text>
+    <Text fw={500} color='dimmed' size={'xs'}>{time}</Text>
+    </>
+  )
+  
+}
+
+const TableRow = ({ user,setEditFormState }: Props) => {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '6fr 1fr 1fr 1fr .5fr .5fr',
+      gridTemplateColumns: GRID_COLUMNS_DIVISION,
       gap: '2px',
       alignItems: 'center',
       justifyItems: 'start',
@@ -33,13 +98,15 @@ const TableRow = ({ user }: Props) => {
       </Stack>
       </Flex>
       <Badge color={'green'} variant='dot'>Active</Badge>
-      <Text fw={500} color='dimmed' size={'sm'}>Admin</Text>
+      <Text fw={500} color='dimmed' size={'sm'}>{user?.role || 'Admin'}</Text>
       <Stack spacing={0}>
-      <Text fw={500} color='dimmed' size={'sm'}>Jun 20,2022</Text>
-      <Text fw={500} color='dimmed' size={'xs'}>6:57 PM</Text>
+      <LastLoginDate/>
       </Stack>
-      <ActionIcon style={{justifySelf:'center'}}><IconTrash size={18}/></ActionIcon>
-      <ActionIcon style={{justifySelf:'center'}}><IconPencil size={18}/></ActionIcon>
+      <DeleteActionIcon id={user.id}/>
+      <EditActionIcon
+      setEditFormState={setEditFormState}
+      user={user}
+      />
     </div>
   )
 }

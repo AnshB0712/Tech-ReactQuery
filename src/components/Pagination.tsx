@@ -1,14 +1,16 @@
 import React from 'react'
+import useUserContext from '../hooks/useUserContext';
 import { Pagination as MantinePagination} from '@mantine/core'
 
-type Props = {
-    setPage: React.Dispatch<React.SetStateAction<number>>,
-    page: number
-}
-
-const Pagination = ({page,setPage}:Props) => {
+const Pagination = () => {
+  const {page,setPage} = useUserContext()
   return (
-    <MantinePagination grow total={10} page={page} onChange={(curPage) => setPage(curPage)}/>
+    <MantinePagination 
+    grow 
+    total={10} 
+    page={page} 
+    onChange={(curPage) => setPage(curPage)}
+    />
   )
 }
 

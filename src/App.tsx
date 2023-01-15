@@ -7,18 +7,11 @@ import { useState } from 'react'
 import useUserContext from './hooks/useUserContext';
 
 function App() {
-
- const {state,page,setPage} = useUserContext()
-//  const {users,total} = useGetUsers(page)
-
-
- if(!state || !state.length) return <p>Loading...</p>
-
   return (
     <Stack p={'xl'}>
-      {/* <Header total={total}/> */}
-      <Table users={state}/>
-      <Pagination page={page} setPage={setPage}/>
+      <Header /> 
+      <Table />
+      <Pagination />
     </Stack>
   )
 }

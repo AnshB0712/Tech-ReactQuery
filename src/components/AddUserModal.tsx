@@ -13,6 +13,7 @@ import { useMutation } from '@tanstack/react-query';
 import { customAxios } from '../api/axios';
 import { createUser } from '../api/apiFunctions';
 import useUserContext from '../hooks/useUserContext'
+import { ActionType } from '../types';
 
 type Props = {
     open: boolean,
@@ -41,7 +42,7 @@ export function AddUserModal({open,setOpen}: Props) {
         e.preventDefault()
         mutate(data)
         dispatch({
-          type: 'ADD_USER',
+          type: ActionType.AddUser,
           payload: data
         })
         setOpen(false)

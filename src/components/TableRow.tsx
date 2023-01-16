@@ -3,38 +3,33 @@ import { IconPencil, IconTrash } from '@tabler/icons'
 import React from 'react'
 import { useMutation } from '@tanstack/react-query'
 import useUserContext from '../hooks/useUserContext'
-import {customAxios} from '../api/axios'
 import {deleteUser} from '../api/apiFunctions'
-import {GRID_COLUMNS_DIVISION} from '../contants'
+import {TABLE_ROW_STYLES} from '../contants'
+import { ActionType, EditFormState, User } from '../types'
 
 type Props = {
-  user:{
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    image: string;
-  }
+  user: User,
+  setEditFormState: React.Dispatch<React.SetStateAction<EditFormState>>
 }
 
-const DeleteActionIcon = ({ id }) => {
+const DeleteActionIcon = ({ id }:{ id: number | string}) => {
   const {dispatch} = useUserContext()
   const { mutateAsync,isLoading } = useMutation({
     mutationFn: () => deleteUser(id),
     onSuccess: () => {
       dispatch({ 
-      type:'DELETE_USER',
+      type:ActionType.DeleteUser,
       payload:{ id } 
     })
     }
   })
   const handleClick = async () => {
-    // DUMMYJSON API WILL THROW ERROR FOR CUSTOM ID USER CREATED MANUALLY
+    // DUMMYJSON API WILL THROW ERROR FOR CUSTOM ID USER CREATED MANUALLY ON DELETION
     if((String(id)).length <= 3)
-    await mutateAsync(id)
+    await mutateAsync()
     else 
     dispatch({ 
-      type:'DELETE_USER',
+      type: ActionType.DeleteUser,
       payload:{ id } 
     })
   }
@@ -48,7 +43,7 @@ const DeleteActionIcon = ({ id }) => {
   )
 }
 
-const EditActionIcon = ({setEditFormState,user}) => {
+const EditActionIcon = ({setEditFormState,user}:Props) => {
   return (
       <ActionIcon 
       onClick={() => setEditFormState({open: true,...user})} 
@@ -59,7 +54,7 @@ const EditActionIcon = ({setEditFormState,user}) => {
 }
 
 const LastLoginDate = () => {
-  const options = {
+  const options: Intl.DateTimeFormatOptions  = {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -79,17 +74,7 @@ const LastLoginDate = () => {
 
 const TableRow = ({ user,setEditFormState }: Props) => {
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: GRID_COLUMNS_DIVISION,
-      gap: '2px',
-      alignItems: 'center',
-      justifyItems: 'start',
-      border: '1px solid #dbdbd8',
-      borderRadius:'10px',
-      padding:'6px',
-      marginBottom: '5px'
-    }}>
+    <div style={TABLE_ROW_STYLES}>
       <Flex justify='center' align={'center'} gap={5}> 
       <Image src={user.image} style={{borderRadius:'50%', height:'35px',width:'35px'}} />
       <Stack spacing={0}>

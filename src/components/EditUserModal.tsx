@@ -10,20 +10,22 @@ import {
   NativeSelect
 } from '@mantine/core';
 import useUserContext from '../hooks/useUserContext'
+import { ActionType, EditFormState } from '../types';
+
 
 type Props = {
-    open: boolean,
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+    formState: EditFormState,
+    setEditFormState: React.Dispatch<React.SetStateAction<EditFormState>>
 }
 
-export function EditUserModal({formState,setEditFormState}) {
+export function EditUserModal({formState,setEditFormState}: Props) {
     
     const [data,setData] = useState({
       ...formState
     })
     const { dispatch } = useUserContext()
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setData(p => ({
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => setData((p: typeof data) => ({
         ...p,
         [e.target.name]: e.target.value
     }))
@@ -35,14 +37,28 @@ export function EditUserModal({formState,setEditFormState}) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         dispatch({
-          type: 'EDIT_USER',
+          type: ActionType.UpdateUser,
           payload: data
         })
-        setEditFormState({open: false})
+        setEditFormState({
+        open: false, 
+        id: '',
+        firstName: '',
+        lastName: '',
+        image: '',
+        email: ''
+      })
     }
     
   return (
-    <Modal opened={formState.open} centered onClose={() => setEditFormState({open: false})} withCloseButton={false}>
+    <Modal opened={formState.open} centered onClose={() => setEditFormState({
+      open: false, 
+      id: '',
+      firstName: '',
+      lastName: '',
+      image: '',
+      email: ''
+      })} withCloseButton={false}>
       <Text size={'lg'} ta='center' fw={500}>EDIT USER</Text>
     <Paper
       p={'lg'}

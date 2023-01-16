@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
-import { customAxios } from '../api/axios'
 import { getUsers } from '../api/apiFunctions'
-import { User } from '../types'
+import { ActionType, ReducerActions, User } from '../types'
 
-const useGetUsers = (page: number,dispatch) => {
+const useGetUsers = (page: number,dispatch: React.Dispatch<ReducerActions>) => {
 
     const query = useQuery({
         queryKey: ['entries',page],
@@ -12,7 +11,7 @@ const useGetUsers = (page: number,dispatch) => {
         keepPreviousData: true,
         onSuccess: (data) => {
           dispatch({
-            type: 'INITIATE_DATA',
+            type: ActionType.InitiateData,
             payload: data.users
           })
         }

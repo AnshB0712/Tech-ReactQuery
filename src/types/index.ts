@@ -45,7 +45,8 @@ export type Company = {
 }
 
 export type User = {
-    id: number;
+    id: number | string;
+    role?: string;
     firstName: string;
     lastName: string;
     maidenName?: string;
@@ -73,3 +74,47 @@ export type User = {
     ssn?: string;
     userAgent?: string;
 }
+
+export enum ActionType {
+    InitiateData = 'INITIATE_DATA',
+    AddUser = 'ADD_USER',
+    UpdateUser = 'EDIT_USER',
+    DeleteUser = 'DELETE_USER'
+  }
+  
+export type InitiateData = {
+    type: ActionType.InitiateData,
+    payload: User[]
+  }
+export type AddUser = {
+    type: ActionType.AddUser,
+    payload: User
+  }
+export type UpdateUser = {
+    type: ActionType.UpdateUser,
+    payload: User
+  }
+export type DeleteUser = {
+    type: ActionType.DeleteUser,
+    payload: {id: string | number}
+  }
+  
+export type ReducerActions = InitiateData | AddUser | UpdateUser | DeleteUser
+  
+export type ContextInitState = {
+    page : number;
+    state : User[],
+    isLoading : boolean;
+    dispatch : React.Dispatch<ReducerActions>;
+    setPage : React.Dispatch<React.SetStateAction<number>>;
+  }
+
+  export type EditFormState = {
+    open: boolean,
+    id: number | string;
+    firstName: string;
+    lastName: string;
+    image: string;
+    email: string;
+    role?: string
+  }

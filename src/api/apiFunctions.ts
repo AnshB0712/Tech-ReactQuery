@@ -1,3 +1,4 @@
+import { User } from '../types';
 import { customAxios } from './axios'
 
 export const createUser = async (data:{
@@ -23,7 +24,7 @@ export const getUsers = async (page: number) => {
           })
   return {users: modifiedUsers}
 }
-export const deleteUser = async(id) => {
+export const deleteUser = async(id: string | number) => {
   const response = await customAxios.delete(`/${id}`)
     return response.data
 }

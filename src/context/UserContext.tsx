@@ -1,26 +1,33 @@
 import React, { createContext,useState,useReducer } from 'react'
 import useGetUsers from '../hooks/useGetUsers'
+import { ActionType, ContextInitState, ReducerActions, User } from '../types'
 
-export const UserContext = createContext({})
+export const UserContext = createContext<ContextInitState>({
+  page: 1,
+  state: [],
+  isLoading: false,
+  dispatch: () => null,
+  setPage: () => null
+})
 
 type ContextProps = {
     children: React.ReactNode
 }
 
-const reducer = (state,{type,payload}) => {
-    console.log(type);
-    if(type === 'INITIATE_DATA'){
+const reducer = (state: User[],action:ReducerActions): User[] => {
+  const {type,payload} = action
+    if(type === ActionType.InitiateData){
         return [...payload]
     }
-    if(type === 'ADD_USER'){
+    if(type === ActionType.AddUser){
         return [payload,...state]
     }
-    if(type === 'DELETE_USER'){
-      const filteredUsers = state.filter(user => user.id !== payload.id)
+    if(type === ActionType.DeleteUser){
+      const filteredUsers = state.filter((user: User) => user.id !== payload.id)
         return [...filteredUsers]
     }
-    if(type === 'EDIT_USER'){
-      const updatedUsers = state.map(user => {
+    if(type === ActionType.UpdateUser){
+      const updatedUsers = state.map((user: User) => {
         if(user.id !== payload.id)
         return user 
         
@@ -28,6 +35,8 @@ const reducer = (state,{type,payload}) => {
       })
         return [...updatedUsers]
     }
+
+    return state
 }
 
 const UserContextProvider = ({children}:ContextProps) => {
